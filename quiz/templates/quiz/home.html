@@ -1,0 +1,90 @@
+{% extends 'basic.html' %}
+
+{% block title %}Home{% endblock title %}
+{% block body %}
+<br>
+{% for q in question %}
+<li>ID : {{q.id}}</li>
+<li>Title : {{q.title}}</li>
+<br>
+<!-- {{answer}} -->
+
+{% endfor %}
+
+{% for an in answer %}
+<li>{{an.answer_text}}</li>
+{% endfor %}
+{{dic}}
+
+<br> <br>
+<div class="bd">
+
+</div>
+
+{% endblock body %}
+
+{% block Script %}
+<script>
+    // get a json from backend django
+   const jis = {{js|safe}}
+   // get class of div
+   const bd = document.querySelector(".bd")
+   // create une list
+   const ul = document.createElement("ul")
+   console.log(typeof(jis))
+   // save all keys of object 
+   let keys = Object.keys(jis)
+   console.log(keys)
+   // declar an empty list
+   let list = []
+   for(let i=0;i<keys.length;i++){
+       // create title for questions
+       const h1 = document.createElement("h1")
+       ul.appendChild(h1)
+       // create id for title
+       h1.setAttribute("id", keys[i])
+       // send values of h1
+       h1.innerHTML = keys[i]
+       // boucle for  all keys in object
+       for(let j =0; j<jis[keys[i]].length;j++){
+           // declar elemnt html for add inside ul *
+        const li = document.createElement("li")
+        const inp = document.createElement("input")
+        const lab = document.createElement("label")
+        inp.setAttribute("type", "checkbox")
+        inp.setAttribute("id",jis[keys[i]][j][0])// for id
+        lab.setAttribute("for",jis[keys[i]][j][0])
+        inp.setAttribute("value",jis[keys[i]][j][1])// for answer ; next for if is true/false 
+        inp.setAttribute("class","quiz_check")
+        lab.innerHTML = jis[keys[i]][j][1]
+        li.setAttribute("id", "list"+jis[keys[i]][j][0])
+        li.appendChild(inp)
+        li.appendChild(lab)
+        ul.appendChild(li)
+        // add id in list if is respense of answer is true
+        console.log(jis[keys[i]][j][2])
+        if(jis[keys[i]][j][2] == true){
+            console.log(jis[keys[i]][j][1])
+            list.push(jis[keys[i]][j][0])
+        }
+       }
+   }
+   bd.appendChild(ul)
+   const listLi = document.querySelectorAll(".quiz_check")
+   console.log(listLi)
+   console.log(typeof(list ), list)
+   listLi.forEach(check => check.addEventListener("click", (e) => {
+       const li  = document.getElementById("list"+e.target.id)
+       const p  = document.createElement("p")
+       console.log(li)
+       if(e.target.id in list){
+           p.style.color = "green"
+           p.innerHTML = "Correct"
+       }else{
+        p.style.color = "red"
+        p.innerHTML = "false"
+       }
+       li.appendChild(p)
+   }))
+</script>
+{% endblock Script %}
